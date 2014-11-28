@@ -133,3 +133,22 @@ function nsl.integerToBinary( number )
   end ):gsub( "^0*", "" ) )
 end
 
+-- Indeterminism Functions -----------------------------------------------------
+
+-- Indeterminate
+nsl.ind = 0/0
+-- Not a Number
+nsl.nan = -nsl.ind
+
+function nsl.isFinite( number )
+  return -math.huge < number and number < math.huge
+end
+
+function nsl.isInfinite( number )
+  return math.huge == number and 1 or -math.huge == number and -1
+end
+
+function nsl.isNaN( object )
+  return object ~= object
+end
+
