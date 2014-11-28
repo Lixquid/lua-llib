@@ -118,3 +118,18 @@ function nsl.round( number, dp )
     or math.floor( number + 0.5 )
 end
 
+-- Binary Functions ------------------------------------------------------------
+
+function nsl.binaryToInteger( string )
+  return tonumber( string, 2 )
+end
+
+local binary_table = {
+  [0] = "000", "001", "010", "011", "100", "101", "110", "111" }
+
+function nsl.integerToBinary( number )
+  return ( ("%o"):format( number ):gsub( "(.)", function( char )
+    return binary_table[ tonumber( char ) ]
+  end ):gsub( "^0*", "" ) )
+end
+
