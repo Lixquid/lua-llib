@@ -218,3 +218,88 @@ function nsl.stripRight( string, character )
   .. "]*$", "" ) )
 end
 
+--[[----------------------------------------------------------------------------
+    Table
+--]]----------------------------------------------------------------------------
+ns.table = ns.table or {}
+local nsl = ns.table
+
+function nsl.contains( table, object )
+  for _, v in pairs( table ) do if v == object then return true end end
+  return false
+end
+
+function nsl.copy( table, recursive )
+  local new = {}
+
+  for k, v in pairs( table ) do
+    new[ k ] = type( v ) == "table" and recursive and nsl.copy( v ) or v
+  end
+  setmetatable( new, getmetatable( table ) )
+
+  return new
+end
+
+function nsl.count( table )
+  local n = 0
+  for _ in pairs( table ) do n = n + 1 end
+  return n
+end
+
+function nsl.empty( table )
+  for k in pairs( table ) do table[k] = nil end
+  return table
+end
+
+function nsl.head( table )
+  return next( table )
+end
+
+function nsl.merge( target, ... )
+  for _, tab in pairs( { ... } ) do
+    for _, v in pairs( tab ) do
+      table.insert( target, v )
+    end
+  end
+
+  return target
+end
+
+function nsl.print( tab, _depth, _recurse )
+  _depth, _recurse = _depth or 0, _recurse or {}
+
+  if _depth == 0 then
+    print( tostring( tab ) .. " {" )
+  end
+
+  _depth = _depth + 1
+  _recurse[ tab ] = true
+
+  for k, v in pairs( tab ) do
+    if type( v ) == "table" and not _recurse[ v ] then
+      print(
+        ("\t"):rep( _depth )
+        .. tostring( k ) .. ": " .. tostring( v ) .. " {" )
+      nsl.print( v, _depth, _recurse )
+    else
+      print( ("\t"):rep( _depth ) .. tostring( k ) .. ": " .. tostring( v ) )
+    end
+  end
+
+  _depth = _depth - 1
+  print( ("\t"):rep( _depth ) .. "}" )
+
+end
+
+function nsl.random( tab )
+  local t = {}
+  for _, v in pairs( tab ) do table.insert( t, v ) end
+  return t[ math.random( #t ) ]
+end
+
+function nsl.tail( tab )
+  local lk, lv
+  for k, v in pairs( tab ) do lk, lv = k, v end
+  return lk, lv
+end
+
