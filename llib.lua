@@ -338,3 +338,57 @@ function nsl.sortDescending( tab )
   return tab
 end
 
+-- Set Functions ---------------------------------------------------------------
+
+function nsl.union( target, ... )
+  for _, table in pairs( { ... } ) do
+    for k, v in pairs( table ) do
+      target[k] = v
+    end
+  end
+
+  return target
+end
+
+function nsl.isSubset( tab, super )
+  for k in pairs( tab ) do if super[k] == nil then return false end end
+  return true
+end
+
+function nsl.difference( target, ... )
+  local new = {}
+
+  for k, v in pairs( target ) do
+    new[k] = v
+    for _, tab in pairs( { ... } ) do
+      if tab[k] then target[k] = nil break end
+    end
+  end
+
+  return target
+end
+
+function nsl.intersection( first, ... )
+	local count = {}
+	local new = {}
+
+	for k, v in pairs( first ) do
+		count[k] = 1
+	end
+
+	for _, table in pairs( {...} ) do
+		for k in pairs( table ) do
+			count[k] = count[k] and count[k] + 1
+		end
+	end
+
+	local n = select( "#", ... ) + 1
+	for k, v in pairs( count ) do
+		if v == n then
+			new[k] = first[k]
+		end
+	end
+
+	return new
+end
+
