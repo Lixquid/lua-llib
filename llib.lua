@@ -326,3 +326,15 @@ function nsl.map( tab, func )
   return tab
 end
 
+-- Sorting Functions -----------------------------------------------------------
+
+function nsl.sortAscending( tab )
+  table.sort( tab )
+  return tab
+end
+
+function nsl.sortDescending( tab )
+  table.sort( tab, function( a, b ) return b < a end )
+  return tab
+end
+
