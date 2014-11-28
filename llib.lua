@@ -201,3 +201,20 @@ function nsl.split( string, separator, plain )
   end
 end
 
+-- Strip Functions -------------------------------------------------------------
+
+function nsl.strip( string, character )
+  return ( tostring( string ):gsub( "^[" .. tostring( character or "%s" )
+    .. "]*(.-)[" .. tostring( character or "%s" ) .. "]*$", "%1" ) )
+end
+
+function nsl.stripLeft( string, character )
+  return ( tostring( string ):gsub( "^[" .. tostring( character or "%s" )
+  .. "]*", "" ) )
+end
+
+function nsl.stripRight( string, character )
+  return ( tostring( string ):gsub( "[" .. tostring( character or "%s" )
+  .. "]*$", "" ) )
+end
+
