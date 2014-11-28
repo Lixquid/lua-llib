@@ -303,3 +303,26 @@ function nsl.tail( tab )
   return lk, lv
 end
 
+-- Mapping Functions -----------------------------------------------------------
+
+function nsl.exists( tab, func )
+  for k, v in pairs( tab ) do if func( v, k ) then return true end end
+  return false
+end
+
+function nsl.forall( tab, func )
+  for k, v in pairs( tab ) do if not func( v, k ) then return false end end
+  return true
+end
+
+function nsl.filter( tab, func )
+  local new = {}
+  for k, v in pairs( tab ) do new[k] = func( v, k ) and v or nil end
+  return new
+end
+
+function nsl.map( tab, func )
+  for k, v in pairs( tab ) do tab[k] = func( v, k ) end
+  return tab
+end
+
