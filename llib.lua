@@ -392,3 +392,19 @@ function nsl.intersection( first, ... )
 	return new
 end
 
+--[[----------------------------------------------------------------------------
+    Functional
+--]]----------------------------------------------------------------------------
+ns.func = ns.func or {}
+local nsl = ns.func
+
+function nsl.partial( func, ... )
+  local curried = { ... }
+  return function( ... )
+    for _, v in pairs( { ... } ) do
+      table.insert( curried, v )
+    end
+    return func( unpack( curried ) )
+  end
+end
+
