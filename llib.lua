@@ -152,3 +152,52 @@ function nsl.isNaN( object )
   return object ~= object
 end
 
+--[[----------------------------------------------------------------------------
+    String
+--]]----------------------------------------------------------------------------
+ns.string = ns.string or {}
+local nsl = ns.string
+
+function nsl.chars( string )
+  return function( t )
+    t[1] = t[1] + 1
+    local c = t[2]:sub( t[1], t[1] )
+    if c and #c > 0 then return t[1], c end
+  end, { 0, tostring( string ) }
+end
+
+function nsl.left( string, length )
+  return tostring( string ):sub( 1, length )
+end
+
+function nsl.right( string, length )
+  return tostring( string ):sub( -length )
+end
+
+function nsl.split( string, separator, plain )
+  local string, separator, t =
+    tostring( string ),
+    tostring( separator or "" ),
+    {}
+
+  if separator == "" then
+    for i = 1, #string do
+      table.insert( t, string:sub( i, i ) )
+    end
+
+    return t
+  end
+
+  while true do
+    local p1, p2 = string:find( separator, 1, plain )
+
+    if not p1 or #string == 0 then
+      if #string > 0 then table.insert( t, string ) end
+      return t
+    end
+
+    table.insert( t, string:sub( 1, p1 - 1 ) )
+    string = string:sub( p2 + 1 )
+  end
+end
+
