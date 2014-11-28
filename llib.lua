@@ -408,3 +408,165 @@ function nsl.partial( func, ... )
   end
 end
 
+--[[----------------------------------------------------------------------------
+    Garry's Mod Drawing
+--]]----------------------------------------------------------------------------
+
+if gmod and CLIENT then
+
+ns.draw = ns.draw or {}
+nsl = ns.draw
+
+-- A cache of materials, to avoid constant lookups
+local mat_cache = {}
+
+-- Shapes ----------------------------------------------------------------------
+
+function nsl.rect( x, y, w, h, color )
+  if color then surface.SetDrawColor( color ) end
+  surface.DrawRect( x, y, w, h )
+end
+
+function nsl.rectOutlined( x, y, w, h, color )
+  if color then surface.SetDrawColor( color ) end
+  surface.DrawOutlinedRect( x, y, w, h )
+end
+
+function nsl.rectTextured( x, y, w, h, color, material, override )
+  if type( material ) == "string" and not mat_cache[ material ] or override then
+    mat_cache[ material ] = Material( material )
+  end
+
+  if color then surface.SetDrawColor( color ) end
+  surface.SetMaterial( mat_cache[ material ] )
+  surface.DrawTexturedRect( x, y, w, h )
+end
+
+function nsl.rectTexturedRotated( x, y, w, h, color, material, angle, override )
+  if type( material ) == "string" and not mat_cache[ material ] or override then
+    mat_cache[ material ] = Material( material )
+  end
+
+  if color then surface.SetDrawColor( color ) end
+  surface.SetMaterial( mat_cache[ material ] )
+  surface.DrawTexturedRectRotated( x, y, w, h, angle )
+end
+
+local mat_corner8 = surface.GetTextureID( "gui/corner8" )
+local mat_corner16 = surface.GetTextureID( "gui/corner16" )
+function nsl.rectRounded( x, y, w, h, color, radius, tl, tr, bl, br )
+
+  local radius = math.floor( radius )
+
+  if color then surface.SetDrawColor( color ) end
+  surface.SetTexture( radius > 8 and mat_corner16 or mat_corner8 )
+
+  surface.DrawRect( x + radius, y, w - radius * 2, radius )
+  surface.DrawRect( x + radius, y + h - radius, w - radius * 2, radius )
+  surface.DrawRect( x, y + radius, w, h - radius * 2 )
+
+  if tl == nil or tl then
+		surface.DrawTexturedRectRotated(
+      x + radius / 2, y + radius / 2, radius, radius, 0 )
+	else
+		surface.DrawRect( x, y, radius, radius )
+	end
+	if tr == nil or tr then
+		surface.DrawTexturedRectRotated(
+      x + w - radius / 2, y + radius / 2, radius, radius, 270 )
+	else
+		surface.DrawRect( x + w - radius, y, radius, radius )
+	end
+	if bl == nil or bl then
+		surface.DrawTexturedRectRotated(
+      x + radius / 2, y + h - radius / 2, radius, radius, 90 )
+	else
+		surface.DrawRect( x, y + h - radius, radius, radius )
+	end
+	if br == nil or br then
+		surface.DrawTexturedRectRotated(
+      x + w - radius / 2, y + h - radius / 2, radius, radius, 180 )
+	else
+		surface.DrawRect( x + w - radius, y + h - radius, radius, radius )
+	end
+
+end
+
+-- Text ------------------------------------------------------------------------
+
+function nsl.text( text, font, x, y, color, ax, ay )
+  if color then surface.SetTextColor( color ) end
+  if font then surface.SetFont( font ) end
+
+  local w, h = surface.GetTextSize( text )
+  surface.SetTextPos(
+    math.floor( x - w * ( ax or 0 ) ),
+    math.floor( y - h * ( ay or 0 ) ) )
+
+  surface.DrawText( text )
+  return w, h
+end
+
+function nsl.textShadowed( text, font, x, y, color, ax, ay, sd, scolor )
+
+	if font then surface.SetFont( font ) end
+
+	local w, h = surface.GetTextSize( text )
+	local x, y =
+    math.floor( x - w * ( ax or 0 ) ),
+    math.floor( y - h * ( ay or 0 ) )
+
+	if scolor then surface.SetTextColor( scolor ) end
+	surface.SetTextPos( x + sd, y + sd )
+	surface.DrawText( text )
+
+	if color then surface.SetTextColor( color ) end
+	surface.SetTextPos( x, y )
+	surface.DrawText( text )
+	return w, h
+
+end
+
+function nsl.textOutlined( text, font, x, y, color, ax, ay, od, ocolor )
+
+  if font then surface.SetFont( font ) end
+
+  local w, h = surface.GetTextSize( text )
+  local x, y =
+    math.floor( x - w * ( ax or 0 ) ),
+    math.floor( y - h * ( ay or 0 ) )
+
+  if ocolor then surface.SetTextColor( scolor ) end
+  for i = -od, od do
+    for j = -od, od do
+      surface.SetTextPos( x + i, y + j )
+      surface.DrawText( text )
+    end
+  end
+
+  if color then surface.SetTextColor( color ) end
+  surface.SetTextPos( x, y )
+  surface.DrawText( text )
+  return w, h
+
+end
+
+function nsl.textEllipses( text, width, font )
+  if font then surface.SetFont( font ) end
+
+  for i = 0, #text - 1 do
+    if surface.GetTextSize( text:sub( i, 1 ) .. "..." ) > width then
+      return i == 0 and "" or text:sub( i - 1, 1 ) .. "..."
+    end
+  end
+
+  return text
+end
+
+-- Utility ---------------------------------------------------------------------
+
+function nsl.materialCache( material )
+  return mat_cache[ material ]
+end
+
+end
