@@ -27,3 +27,21 @@ function ns.assertTable( object )
   return type( object ) == "table" and object or nil
 end
 
+--[[----------------------------------------------------------------------------
+    General
+--]]----------------------------------------------------------------------------
+
+function ns.toBool( object )
+  if not object then
+    return false
+  elseif type( object ) == "number" then
+    return object ~= 0
+  elseif type( object ) == "string" then
+    return object ~= "" and object ~= "0" and object:lower() ~= "false"
+  elseif type( object ) == "table" then
+    return next( object ) and true or false
+  end
+
+  return true
+end
+
