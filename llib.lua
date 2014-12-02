@@ -1,12 +1,12 @@
 --[[----------------------------------------------------------------------------
-    LLib - v0.1.1
+    LLib - v0.2.0
 
     A lightweight library of Lua functions
     Made with <3 by Lixquid
 --]]----------------------------------------------------------------------------
 
 llib = {}
-llib.version = "0.1.1"
+llib.version = "0.2.0"
 llib.invasive = true
 
 local ns = llib.invasive and _G or llib
@@ -407,6 +407,8 @@ function nsl.partial( func, ... )
     return func( unpack( curried ) )
   end
 end
+
+function nsl.nop() end
 
 --[[----------------------------------------------------------------------------
     Garry's Mod Drawing
