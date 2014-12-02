@@ -1,12 +1,12 @@
 --[[----------------------------------------------------------------------------
-    LLib - v0.1.0
+    LLib - v0.1.1
 
     A lightweight library of Lua functions
     Made with <3 by Lixquid
 --]]----------------------------------------------------------------------------
 
 llib = {}
-llib.version = "0.1.0"
+llib.version = "0.1.1"
 llib.invasive = true
 
 local ns = llib.invasive and _G or llib
@@ -433,8 +433,10 @@ function nsl.rectOutlined( x, y, w, h, color )
 end
 
 function nsl.rectTextured( x, y, w, h, color, material, override )
-  if type( material ) == "string" and not mat_cache[ material ] or override then
-    mat_cache[ material ] = Material( material )
+  if not mat_cache[ material ] or override then
+    mat_cache[ material ] = type( material ) == "string"
+      and Material( material )
+      or material
   end
 
   if color then surface.SetDrawColor( color ) end
@@ -443,8 +445,10 @@ function nsl.rectTextured( x, y, w, h, color, material, override )
 end
 
 function nsl.rectTexturedRotated( x, y, w, h, color, material, angle, override )
-  if type( material ) == "string" and not mat_cache[ material ] or override then
-    mat_cache[ material ] = Material( material )
+  if not mat_cache[ material ] or override then
+    mat_cache[ material ] = type( material ) == "string"
+      and Material( material )
+      or material
   end
 
   if color then surface.SetDrawColor( color ) end
