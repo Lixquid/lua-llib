@@ -5,7 +5,12 @@
 --
 --          Made with <3 by Lixquid
 --]]----------------------------------------------------------------------------
+local stringRep = string.rep
 local type = type
+local unpack = unpack or table.unpack
+local mathLog = math.log
+local tonumber = tonumber
+local stringGsub = string.gsub
 local mathFloor = math.floor
 local next = next
 local mathMax = math.max
@@ -69,12 +74,81 @@ function llib.math.round(value, dp)
         or mathFloor(value + 0.5)
 end
 
---- Returns if a value is NaN (Not a Number)
+--- Returns if a value is NaN (Not a Number).
 -- @number value The value to be checked
 -- @treturn bool if the number is NaN
 function llib.math.isNaN(value)
     return value ~= value
 end
+
+-- String ----------------------------------------------------------------------
+llib.string = {}
+
+--- Returns a string representation of a number with separators.
+-- @number value The number to convert to a string
+-- @string[opt=","] separator The separator to use
+-- @number[opt=3] spacing The number of digits to separate by
+-- @treturn string string representation of value with separators
+function llib.string.comma(value, separator, spacing)
+    spacing = "^(-?%d+)(" .. stringRep("%d", tonumber(spacing or 3)) .. ")"
+    separator = "%1" .. tostring(separator or ",") .. "%2"
+    local hit
+    while true do
+        value, hit = stringGsub(value, spacing, separator)
+        if hit == 0 then return value end
+    end
+end
+
+--- Returns the English ordinal suffix for a number.
+-- @number value The number to return a suffix for
+-- @treturn string The ordinal suffix of value
+function llib.string.ordinal(value)
+    value = tonumber(value)
+
+    if 10 <= value % 100 and value % 100 <= 19 then
+        return "th"
+    elseif value % 10 == 1 then
+        return "st"
+    elseif value % 10 == 2 then
+        return "nd"
+    elseif value % 10 == 3 then
+        return "rd"
+    end
+
+    return "th"
+end
+
+--- Returns the SI metric representation of a number.
+-- @number value The value to return a representation for
+-- @number[opt=1000] base The numeric base to delimit units for
+-- @treturn number The reduced metric number for value
+-- @treturn string The metric unit suffix for the value
+-- @treturn string The name of the metric unit suffix for the value
+local llibStringMetricSITable = {
+    [-8] = { "y", "yocto" },
+    [-7] = { "z", "zepto" },
+    [-6] = { "a", "atto" },
+    [-5] = { "f", "femto" },
+    [-4] = { "p", "pico" },
+    [-3] = { "n", "nano" },
+    [-2] = { "u", "micro" },
+    [-1] = { "m", "milli" },
+    [0] = { "", "" },
+    { "k", "kilo" },
+    { "M", "mega" },
+    { "G", "giga" },
+    { "T", "tera" },
+    { "P", "peta" },
+    { "E", "exa" },
+    { "Z", "zetta" },
+    { "Y", "yotta" },
+}
+function llib.string.metricSI(value, base)
+    base = tonumber(base or 1000)
+    local div = llibMathClamp(mathFloor(mathLog(value) / mathLog(base)), -8, 8)
+    return value / base ^ div, unpack(llibStringMetricSITable[div])
+end
+
 
 --------------------------------------------------------------------------------
 
